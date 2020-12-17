@@ -149,6 +149,7 @@ $(document).ready(function () {
     $('#submitBtn').on('click', function (event) {
         event.preventDefault();
         if (!$('#userInput').val()) return
+        $("#errorMessage").css("display", "none")
         // returns object containing 5 day forecast
         $.ajax({
             url: forecastWeatherAPI($('#userInput').val()),
@@ -157,15 +158,22 @@ $(document).ready(function () {
             $(".forecastColumn").remove()
             forecastWeatherAPIResponse(response)
         }).catch(error => {
-            
-            console.log(error.responseJSON.message)
+            $("#errorMessage").css({ "display": "inline-block", "color": "red" }).text(error.responseJSON.message)
         })
 
         // returns object containing current day forecast
         $.ajax({
             url: currentWeatherAPI($('#userInput').val()),
             method: "GET"
-        }).then(currentWeatherAPIResponse)
+        }).then(response => {
+            var lat = response.coord.lat;
+            var lon = response.coord.lon;
+            currentWeatherAPIResponse(response)
+            return $.ajax({
+                url: uvIndex(lat, lon),
+                method: "GET"
+            })
+        }).then(uvIndexResponse)
 
     })
 
