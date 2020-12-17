@@ -3,6 +3,10 @@
     padding: 0px;
 }
 
+.w100 {
+    width: 100% !important;
+}
+
 .navbarStyles {
     justify-content: center;
 }
