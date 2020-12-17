@@ -1,0 +1,48 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+.navbarStyles {
+    justify-content: center;
+}
+
+#searchColumn {
+    background: whitesmoke;
+    margin-top: 10px;
+}
+
+.recentSearch {
+    background: white;
+    margin: 10px;
+}
+
+.mainWeatherBlock {
+    width: 100%;
+}
+
+.weatherColumn {
+    margin: 10px;
+}
+
+.forecastRow {
+    margin: 5px 0px;
+}
+
+.forecastDays {
+    background: #3898eb;
+    color: white;
+}
+
+@media screen and (max-width: 992px) {
+    #searchColumn {
+        margin: 10px 25px;
+    }
+
+}
+
+@media screen and (max-width: 1200px) {
+    .forecastColumn {
+        margin-bottom: 15px;
+    }
+}
