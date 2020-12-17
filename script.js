@@ -22,17 +22,11 @@ $(document).ready(function () {
                     $('<div/>', { "class": "row" }).append(
                         $('<form/>', { "class": "col form-inline my-2 my-lg-0" }).append([
                             $('<input>', { "class": "form-control w100 ", type: "search", placeholder: "Search", "aria-label": "Search", id: "userInput" }),
-                            $('<p/>', { "class": "w100", id: "errorMessage"}).css("display", "none"),
+                            $('<p/>', { "class": "w100", id: "errorMessage" }).css("display", "none"),
                             $('<button/>', { "class": "w100 btn btn-outline-success my-2 my-sm-2", id: "submitBtn", type: "submit" }).text("Search"),
                             $('<button/>', { "class": "w100 btn btn-info", id: "clearBtn" }).text("Clear")])),
-                    $('<div/>', { "class": "row recentSearch" }).append(
-                        $('<h4/>').text("Chicago")),
-                    $('<div/>', { "class": "row" }).append(
-                        $('<h4/>').text("New York")),
-                    $('<div/>', { "class": "row" }).append(
-                        $('<h4/>').text("Miami")),
-                    $('<div/>', { "class": "row" }).append(
-                        $('<h4/>').text("Los Angeles"))]),
+                    $('<div/>', { "class": "row recentSearch" })
+                ]),
             $('<div/>', { "class": "col-lg-9" }).append([
                 $('<div/>', { "class": "row weatherColumn" }).append(
                     $('<div/>', { "class": "card mainWeatherBlock" }).append(
@@ -55,7 +49,81 @@ $(document).ready(function () {
             ])
         ]);
     }
-    createDashboard()
+    function cityApi(city) {
+        $.ajax({
+            url: forecastWeatherAPI(city),
+            method: "GET"
+        }).then((response) => {
+            $(".forecastColumn").remove()
+            localStorage.setItem("latestHistory", city)
+            forecastWeatherAPIResponse(response)
+        }).catch(error => {
+            $("#errorMessage").css({ "display": "inline-block", "color": "red" }).text(error.responseJSON.message)
+        })
+
+
+        // returns object containing current day forecast
+        $.ajax({
+            url: currentWeatherAPI(city),
+            method: "GET"
+        }).then(response => {
+            var lat = response.coord.lat;
+            var lon = response.coord.lon;
+            currentWeatherAPIResponse(response)
+            return $.ajax({
+                url: uvIndex(lat, lon),
+                method: "GET"
+            })
+        }).then(uvIndexResponse)
+    }
+
+    function onLoad() {
+        //LocalStorage
+        /// Search History
+        const getSearchHistory = (JSON.parse(localStorage.getItem("searchHistory")) || [])
+
+        const searchElement = getSearchHistory.map(item => {
+            return $('<h4/>', { "class": "w100 city" })
+                .css({"background": "white", "margin": "4px 0px"})
+                .text(item)
+                .on("click", () => { 
+                    cityApi(item)
+                })
+        })
+        $(".recentSearch").append(searchElement)
+
+        /// Latest History
+        // latestHistory: "Seattle"
+        const latestHistory = localStorage.getItem("latestHistory") //"Seattle" || null
+
+        if (!latestHistory) {
+            // returns object containing 5 day forecast
+            $.ajax({
+                url: forecastWeatherAPI(),
+                method: "GET"
+            }).then((response) => {
+                $(".forecastColumn").remove()
+                forecastWeatherAPIResponse(response)
+            }).catch(error => {
+                $("#errorMessage").css({ "display": "inline-block", "color": "red" }).text(error.responseJSON.message)
+            })
+
+            // returns object containing current day forecast
+            $.ajax({
+                url: currentWeatherAPI(),
+                method: "GET"
+            }).then(currentWeatherAPIResponse)
+
+            // returns object containing current day UV index
+            $.ajax({
+                url: uvIndex(),
+                method: "GET"
+            }).then(uvIndexResponse)
+        } else {
+            cityApi(latestHistory)
+        }
+
+    }
 
     function createForecastCard({ forecastDate, forecastIcon, forecastTemp, forecastHumid }) {
         forecastWeatherSection.append(
@@ -73,36 +141,20 @@ $(document).ready(function () {
     }
 
     const forecastWeatherAPIResponse = function (response) {
-        console.log(forecastWeatherAPI)
-        console.log(response) // object returned
-        // var forecastDateFull = (response.list[2].dt_txt) // date returned
-        // var forecastIcon = (response.list[2].weather[0].icon) // icon returned
-        // var forecastTemp = (response.list[2].main.temp) // temperature returned
-        // var forecastHumid = (response.list[2].main.humidity) // humidity returned
-        // var formatDate = new Date(forecastDateFull)
-        // console.log(formatDate.toDateString())
-        // var forecastDate = formatDate.toDateString()
-
         response.list.forEach((list, index, arrayList) => {
             var count = (index + 1) * 7;
             if (count > arrayList.length) return;
-            console.log(count)
             var forecastDateFull = arrayList[count].dt_txt;
             var forecastIcon = arrayList[count].weather[0].icon;
             var forecastTemp = arrayList[count].main.temp;
             var forecastHumid = arrayList[count].main.humidity;
             var formatDate = new Date(forecastDateFull)
             var forecastDate = formatDate.toDateString();
-            // console.log(response)
-            // console.log(forecastDateFull)
-            // console.log(formatDate)
             createForecastCard({ forecastDate, forecastIcon, forecastTemp, forecastHumid })
         })
     }
 
     const currentWeatherAPIResponse = function (response) {
-        // console.log(currentWeatherAPI)
-        // console.log(response) // object returned
         var cityData = (response.name) // name of city returned
         var iconData = (response.weather[0].icon) // icon returned
         var tempData = (response.main.temp) // temperature returned
@@ -128,42 +180,46 @@ $(document).ready(function () {
         }
     }
 
-    // returns object containing 5 day forecast
-    $.ajax({
-        url: forecastWeatherAPI(),
-        method: "GET"
-    }).then(forecastWeatherAPIResponse)
-
-    // returns object containing current day forecast
-    $.ajax({
-        url: currentWeatherAPI(),
-        method: "GET"
-    }).then(currentWeatherAPIResponse)
-
-    // returns object containing current day UV index
-    $.ajax({
-        url: uvIndex(),
-        method: "GET"
-    }).then(uvIndexResponse)
+    createDashboard()
+    onLoad()
 
     $('#submitBtn').on('click', function (event) {
         event.preventDefault();
-        if (!$('#userInput').val()) return
+        const text = $('#userInput').val();
+        if (!text) return 
         $("#errorMessage").css("display", "none")
         // returns object containing 5 day forecast
         $.ajax({
-            url: forecastWeatherAPI($('#userInput').val()),
+            url: forecastWeatherAPI(text),
             method: "GET"
         }).then((response) => {
             $(".forecastColumn").remove()
+            $(".city").remove()
+            $("#userInput").val('')
+            const getSearchHistory = (JSON.parse(localStorage.getItem("searchHistory")) || [])
+            const searchHistory = [text, ...getSearchHistory]
+            localStorage.setItem("searchHistory", JSON.stringify(searchHistory))
+            localStorage.setItem("latestHistory", text)
+            
+            const searchElement = searchHistory.map(item => {
+                return $('<h4/>', { "class": "w100 city" })
+                .css({"background": "white", "margin": "4px 0px"})
+                .text(item)
+                .on("click", () => { 
+                    cityApi(item)
+                })
+            })
+            $(".recentSearch").append(searchElement)
+
             forecastWeatherAPIResponse(response)
         }).catch(error => {
+            $("#userInput").val('')
             $("#errorMessage").css({ "display": "inline-block", "color": "red" }).text(error.responseJSON.message)
         })
 
         // returns object containing current day forecast
         $.ajax({
-            url: currentWeatherAPI($('#userInput').val()),
+            url: currentWeatherAPI(text),
             method: "GET"
         }).then(response => {
             var lat = response.coord.lat;
@@ -179,6 +235,11 @@ $(document).ready(function () {
 
     $('#clearBtn').on('click', function (event) {
         event.preventDefault();
+        localStorage.removeItem("searchHistory")
+        localStorage.removeItem("latestHistory")
+        $(".city").remove()
+        $("#userInput").val('')
+        $("#errorMessage").css({ "display": "none"}).text('')
         console.log("clear")
     })
 })
