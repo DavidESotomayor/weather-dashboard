@@ -3,12 +3,14 @@ var apiKey = 'f8c674028f7d3e9fc14527ccfada55ec'
 var forecastWeatherAPI = 'http://api.openweathermap.org/data/2.5/forecast?q=Chicago&units=imperial&appid=' + apiKey;
 var currentWeatherAPI = 'http://api.openweathermap.org/data/2.5/weather?q=Chicago&units=imperial&appid=' + apiKey;
 var uvIndex = 'http://api.openweathermap.org/data/2.5/uvi?lat=41.85&lon=-87.65&appid=' + apiKey;
+var forecastWeatherSection = $('<div/>', { "class": "row forecastRow"});
 
 
 
 
 function createDashboard() {
     var mainRow = $('<div/>', { "class": "row"});
+
     $('body').append([
         $('<nav/>', { "class": "navbar navbar-light bg-light navbarStyles"}).append(
             $('<span/>', { "class": "navbar-brand mb-0 h1"}).text("Weather Dashboard")),
@@ -48,62 +50,27 @@ function createDashboard() {
                         )
                     ),
                     $('<div/>', { "class": "row weatherColumn"}).append( $('<h3/>').text("5-Day Forecast:")),
-                    $('<div/>', { "class": "row forecastRow"}).append([
-                        $('<div/>', { "class": "col-xl forecastColumn"}).append(
-                            $('<div/>', { "class": "card forecastDays"}).append(
-                                $('<div/>', { "class": "card-body"}).append([
-                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
-                                    $('<img>', { "class": "forecastIcon", src: ""}),
-                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
-                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
-                                ])
-                            )
-                        ),
-                        $('<div/>', { "class": "col-xl"}).append(
-                            $('<div/>', { "class": "card"}).append(
-                                $('<div/>', { "class": "card-body"}).append([
-                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
-                                    $('<img>', { "class": "forecastIcon", src: ""}),
-                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
-                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
-                                ])
-                            )
-                        ),
-                        $('<div/>', { "class": "col-xl"}).append(
-                            $('<div/>', { "class": "card"}).append(
-                                $('<div/>', { "class": "card-body"}).append([
-                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
-                                    $('<img>', { "class": "forecastIcon", src: ""}),
-                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
-                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
-                                ])
-                            )
-                        ),
-                        $('<div/>', { "class": "col-xl"}).append(
-                            $('<div/>', { "class": "card"}).append(
-                                $('<div/>', { "class": "card-body"}).append([
-                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
-                                    $('<img>', { "class": "forecastIcon", src: ""}),
-                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
-                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
-                                ])
-                            )
-                        ),
-                        $('<div/>', { "class": "col-xl"}).append(
-                            $('<div/>', { "class": "card"}).append(
-                                $('<div/>', { "class": "card-body"}).append([
-                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
-                                    $('<img>', { "class": "forecastIcon", src: ""}),
-                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
-                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
-                                ])
-                            )
-                        )
-                    ])
+                    forecastWeatherSection
                 ])
             ]);
   }
 createDashboard()
+
+function createForecastCard() {
+    forecastWeatherSection.append(
+        $('<div/>', { "class": "col-xl forecastColumn"}).append(
+            $('<div/>', { "class": "card forecastDays"}).append(
+                $('<div/>', { "class": "card-body"}).append([
+                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
+                    $('<img>', { "class": "forecastIcon", src: ""}),
+                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
+                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
+                ])
+            )
+        )
+    )
+}
+
 
 // returns object containing 5 day forecast
 $.ajax({
@@ -113,17 +80,33 @@ $.ajax({
     .then(function(response) {
         console.log(forecastWeatherAPI)
         console.log(response) // object returned
-        var forecastDateFull = (response.list[2].dt_txt) // date returned
-        var forecastIcon = (response.list[2].weather[0].icon) // icon returned
-        var forecastTemp = (response.list[2].main.temp) // temperature returned
-        var forecastHumid = (response.list[2].main.humidity) // humidity returned
-        var formatDate = new Date(forecastDateFull)
-        console.log(formatDate.toDateString())
-        var forecastDate = formatDate.toDateString()
-        $(".forecastDate").text(forecastDate)
-        $(".forecastIcon").attr("src", "http://openweathermap.org/img/w/" + forecastIcon + ".png");
-        $(".forecastTemp").text('Temperature: ' + forecastTemp + ' F')
-        $(".forecastHumid").text('Humidity: ' + forecastHumid + ' %')
+        // var forecastDateFull = (response.list[2].dt_txt) // date returned
+        // var forecastIcon = (response.list[2].weather[0].icon) // icon returned
+        // var forecastTemp = (response.list[2].main.temp) // temperature returned
+        // var forecastHumid = (response.list[2].main.humidity) // humidity returned
+        // var formatDate = new Date(forecastDateFull)
+        // console.log(formatDate.toDateString())
+        // var forecastDate = formatDate.toDateString()
+
+        for ( var i = 0; i < 5; i++) {
+            var count = (i + 1) * 6;
+            console.log(response)
+            var forecastDateFull = response.list[count].dt_txt;
+            console.log(forecastDateFull)
+            var forecastIcon = response.list[count].weather[0].icon;
+            var forecastTemp = response.list[count].main.temp;
+            var forecastHumid = response.list[count].main.humidity;
+            var formatDate = new Date(forecastDateFull)
+            console.log(formatDate)
+            var forecastDate = formatDate.toDateString();
+            createForecastCard()
+            $(".forecastDate").text(forecastDate)
+            $(".forecastIcon").attr("src", "http://openweathermap.org/img/w/" + forecastIcon + ".png");
+            $(".forecastTemp").text('Temperature: ' + forecastTemp + ' F')
+            $(".forecastHumid").text('Humidity: ' + forecastHumid + ' %')
+        }
+
+
 
     })
 
