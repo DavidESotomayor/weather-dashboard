@@ -12,10 +12,18 @@ $.ajax({
     .then(function(response) {
         console.log(forecastWeatherAPI)
         console.log(response) // object returned
-        console.log(response.list[2].dt_txt) // date returned
-        console.log(response.list[2].weather[0].icon) // icon returned
-        console.log(response.list[2].main.temp) // temperature returned
-        console.log(response.list[2].main.humidity) // humidity returned
+        var forecastDateFull = (response.list[2].dt_txt) // date returned
+        var forecastIcon = (response.list[2].weather[0].icon) // icon returned
+        var forecastTemp = (response.list[2].main.temp) // temperature returned
+        var forecastHumid = (response.list[2].main.humidity) // humidity returned
+        var formatDate = new Date(forecastDateFull)
+        console.log(formatDate.toDateString())
+        var forecastDate = formatDate.toDateString()
+        $(".forecastDate").text(forecastDate)
+        $(".forecastIcon").attr("src", "http://openweathermap.org/img/w/" + forecastIcon + ".png");
+        $(".forecastTemp").text('Temperature: ' + forecastTemp)
+        $(".forecastHumid").text('Humidity: ' + forecastHumid)
+
     })
 
 // returns object containing current day forecast
@@ -26,11 +34,18 @@ $.ajax({
     .then(function(response) {
         console.log(currentWeatherAPI)
         console.log(response) // object returned
-        console.log(response.name) // name of city returned
-        console.log(response.weather[0].icon) // icon returned
-        console.log(response.main.temp) // temperature returned
-        console.log(response.main.humidity) // humidity returned
-        console.log(response.wind.speed) // wind speed returned
+        var cityData = (response.name) // name of city returned
+        var iconData = (response.weather[0].icon) // icon returned
+        var tempData = (response.main.temp) // temperature returned
+        var humidData = (response.main.humidity) // humidity returned
+        var windData = (response.wind.speed) // wind speed returned
+        $("#currentIcon").attr("src", "http://openweathermap.org/img/w/" + iconData + ".png");
+        $("#currentCity").text('City: ' + cityData)
+        $("#currentTemp").text('Temperature: ' + tempData)
+        $("#currentHumid").text('Humidity: ' + humidData)
+        $("#currentWind").text('Wind: ' + windData)
+        
+
     })
 
 // returns object containing current day UV index
@@ -41,6 +56,7 @@ $.ajax({
     .then(function(response) {
         console.log(uvIndex)
         console.log(response) // object returned
-        console.log(response.value) // UV index returned
+        var uvData = (response.value) // UV index returned
+        $("#currentUV").text('UV: ' + uvData)
     })
 })

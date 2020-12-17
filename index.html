@@ -47,11 +47,13 @@
                 <div class="row">
                     <div class="card" style="width: 100%"">
                         <div class="card-body">
-                            <h4 class="card-title">City: <span style="color: Yellow">Icon</span></h4>
-                            <p class="card-text">Temperature</p>
-                            <p class="card-text">Humidity</p>
-                            <p class="card-text">Wind</p>
-                            <p class="card-text">UV Index</p>
+                            <div class="cityAndIcon">
+                            <h4 id="currentCity" class="card-title"></h4>
+                            <img id="currentIcon" src=""></div>
+                            <p id="currentTemp" class="card-text"></p>
+                            <p id="currentHumid" class="card-text"></p>
+                            <p id="currentWind" class="card-text"></p>
+                            <p id="currentUV" class="card-text"></p>
                         </div>
                     </div>
                 </div>
@@ -62,10 +64,10 @@
                         <div class="col-md">
                             <div class="card" style="background: blue">
                                 <div class="card-body">
-                                    <h5 class="card-title">Date:</h5>
-                                    <h6 class="card-subtitle mb-2 text-muted">Icon</h6>
-                                    <p class="card-text">Temp</p>
-                                    <p class="card-text">Humidity</p>
+                                    <h5 class="card-title forecastDate">Date:</h5>
+                                    <img class="forecastIcon" src="">
+                                    <p class="card-text forecastTemp">Temp</p>
+                                    <p class="card-text forecastHumid">Humidity</p>
                                 </div>
                             </div>
                         </div>
