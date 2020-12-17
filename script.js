@@ -11,7 +11,11 @@ $.ajax({
     })
     .then(function(response) {
         console.log(forecastWeatherAPI)
-        console.log(response)
+        console.log(response) // object returned
+        console.log(response.list[2].dt_txt) // date returned
+        console.log(response.list[2].weather[0].icon) // icon returned
+        console.log(response.list[2].main.temp) // temperature returned
+        console.log(response.list[2].main.humidity) // humidity returned
     })
 
 // returns object containing current day forecast
@@ -21,7 +25,12 @@ $.ajax({
     })
     .then(function(response) {
         console.log(currentWeatherAPI)
-        console.log(response)
+        console.log(response) // object returned
+        console.log(response.name) // name of city returned
+        console.log(response.weather[0].icon) // icon returned
+        console.log(response.main.temp) // temperature returned
+        console.log(response.main.humidity) // humidity returned
+        console.log(response.wind.speed) // wind speed returned
     })
 
 // returns object containing current day UV index
@@ -31,6 +40,7 @@ $.ajax({
     })
     .then(function(response) {
         console.log(uvIndex)
-        console.log(response)
+        console.log(response) // object returned
+        console.log(response.value) // UV index returned
     })
 })
