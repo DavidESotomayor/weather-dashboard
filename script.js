@@ -4,6 +4,107 @@ var forecastWeatherAPI = 'http://api.openweathermap.org/data/2.5/forecast?q=Chic
 var currentWeatherAPI = 'http://api.openweathermap.org/data/2.5/weather?q=Chicago&units=imperial&appid=' + apiKey;
 var uvIndex = 'http://api.openweathermap.org/data/2.5/uvi?lat=41.85&lon=-87.65&appid=' + apiKey;
 
+
+
+
+function createDashboard() {
+    var mainRow = $('<div/>', { "class": "row"});
+    $('body').append([
+        $('<nav/>', { "class": "navbar navbar-light bg-light"}).append(
+            $('<span/>', { "class": "navbar-brand mb-0 h1"}).text("Navbar")),
+        $('<div/>', { "class": "container"}).append(
+            mainRow)]);
+
+            mainRow.append([
+                $('<div/>', { "class": "col-lg-3"})
+                .append([
+                    $('<div/>', { "class": "row"}).append(
+                        $('<h4/>').text("Search for a City:")),
+                    $('<div/>', { "class": "row"}).append(
+                        $('<form/>', { "class": "form-inline my-2 my-lg-0"}).append([
+                            $('<input>', { "class": "form-control mr-sm-2", type: "search", placeholder: "Search", "aria-label": "Search"}),
+                            $('<button/>', { "class": "btn btn-outline-success my-2 my-sm-2"}).attr("type", "submit").text("Search"),
+                            $('<button/>', { "class": "btn btn-info"}).text("Clear")])),
+                    $('<div/>', { "class": "row"}).append(
+                        $('<h4/>').text("Chicago")),
+                    $('<div/>', { "class": "row"}).append(
+                        $('<h4/>').text("New York")),
+                    $('<div/>', { "class": "row"}).append(
+                        $('<h4/>').text("Miami")),
+                    $('<div/>', { "class": "row"}).append(
+                        $('<h4/>').text("Los Angeles"))]),
+                $('<div/>', { "class": "col-lg-9"}).append([
+                    $('<div/>', { "class": "row"}).append(
+                        $('<div/>', { "class": "card"}).append(
+                            $('<div/>', { "class": "card-body"}).append([
+                                $('<div/>', { "class": "cityAndIcon"}).append([
+                                    $('<h4/>', { id: "currentCity", "class": "card-title"}),
+                                    $('<img>', { id: "currentIcon", src: ""})]),
+                                $('<p/>', { id: "currentTemp", "class": "card-text"}),
+                                $('<p/>', { id: "currentHumid", "class": "card-text"}),
+                                $('<p/>', { id: "currentWind", "class": "card-text"}),
+                                $('<p/>', { id: "currentUV", "class": "card-text"})
+                            ])
+                        )
+                    ),
+                    $('<div/>', { "class": "row"}).append( $('<h3/>').text("5-Day Forecast:")),
+                    $('<div/>', { "class": "row"}).append([
+                        $('<div/>', { "class": "col-md"}).append(
+                            $('<div/>', { "class": "card"}).append(
+                                $('<div/>', { "class": "card-body"}).append([
+                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
+                                    $('<img>', { "class": "forecastIcon", src: ""}),
+                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
+                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
+                                ])
+                            )
+                        ),
+                        $('<div/>', { "class": "col-md"}).append(
+                            $('<div/>', { "class": "card"}).append(
+                                $('<div/>', { "class": "card-body"}).append([
+                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
+                                    $('<img>', { "class": "forecastIcon", src: ""}),
+                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
+                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
+                                ])
+                            )
+                        ),
+                        $('<div/>', { "class": "col-md"}).append(
+                            $('<div/>', { "class": "card"}).append(
+                                $('<div/>', { "class": "card-body"}).append([
+                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
+                                    $('<img>', { "class": "forecastIcon", src: ""}),
+                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
+                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
+                                ])
+                            )
+                        ),
+                        $('<div/>', { "class": "col-md"}).append(
+                            $('<div/>', { "class": "card"}).append(
+                                $('<div/>', { "class": "card-body"}).append([
+                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
+                                    $('<img>', { "class": "forecastIcon", src: ""}),
+                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
+                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
+                                ])
+                            )
+                        ),
+                        $('<div/>', { "class": "col-md"}).append(
+                            $('<div/>', { "class": "card"}).append(
+                                $('<div/>', { "class": "card-body"}).append([
+                                    $('<h5/>', { "class": "card-title forecastDate"}).text("Date:"),
+                                    $('<img>', { "class": "forecastIcon", src: ""}),
+                                    $('<p/>', { "class": "card-text forecastTemp"}).text("Temp"),
+                                    $('<p/>', { "class": "card-text forecastHumid"}).text("Humidity")
+                                ])
+                            )
+                        )
+                    ])
+                ])
+            ]);
+  }
+createDashboard()
+
 // returns object containing 5 day forecast
 $.ajax({
     url: forecastWeatherAPI,
