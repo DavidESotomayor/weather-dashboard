@@ -21,17 +21,33 @@
     width: 100%;
 }
 
+.cityAndIcon {
+    display: flex;
+}
+
 .weatherColumn {
     margin: 10px;
+}
+
+#currentUVData {
+    margin-left: 4px;
 }
 
 .forecastRow {
     margin: 5px 0px;
 }
 
+.forecastColumn {
+    padding: 0px 8px;
+}
+
 .forecastDays {
     background: #3898eb;
     color: white;
+}
+
+.forecastCard {
+    padding: 1.00rem;
 }
 
 @media screen and (max-width: 992px) {

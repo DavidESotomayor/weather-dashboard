@@ -45,7 +45,10 @@ $(document).ready(function () {
                             $('<p/>', { id: "currentTemp", "class": "card-text" }),
                             $('<p/>', { id: "currentHumid", "class": "card-text" }),
                             $('<p/>', { id: "currentWind", "class": "card-text" }),
-                            $('<p/>', { id: "currentUV", "class": "card-text" })
+                            $('<div/>', { "class": "row" }).css("margin-left", "1px").append([
+                                $('<p/>', { id: "currentUVText", "class": "card-text" }).text("UV:"),
+                                $('<p/>', { id: "currentUVData" }).text('- - -')
+                            ])
                         ])
                     )
                 ),
@@ -60,8 +63,8 @@ $(document).ready(function () {
         forecastWeatherSection.append(
             $('<div/>', { "class": "col-xl forecastColumn" }).append(
                 $('<div/>', { "class": "card forecastDays" }).append(
-                    $('<div/>', { "class": "card-body" }).append([
-                        $('<h5/>', { "class": "card-title forecastDate" }).text(`Date: ${forecastDate}`),
+                    $('<div/>', { "class": "card-body forecastCard" }).append([
+                        $('<h5/>', { "class": "card-title forecastDate" }).text(`${forecastDate}`),
                         $('<img>', { "class": "forecastIcon", src: `http://openweathermap.org/img/w/${forecastIcon}.png`}),
                         $('<p/>', { "class": "card-text forecastTemp" }).text(`Temperature: ${forecastTemp} F`),
                         $('<p/>', { "class": "card-text forecastHumid" }).text(`Humidity: ${forecastHumid} %`)
@@ -89,7 +92,7 @@ $(document).ready(function () {
             // var forecastDate = formatDate.toDateString()
 
             response.list.forEach((list, index, arrayList) => {
-                var count = (index + 1) * 6;
+                var count = (index + 1) * 7;
                 if (count > arrayList.length) return;
                 console.log(count)
                 var forecastDateFull = arrayList[count].dt_txt;
@@ -135,9 +138,13 @@ $(document).ready(function () {
         method: "GET"
     })
         .then(function (response) {
-            // console.log(uvIndex)
-            // console.log(response) // object returned
             var uvData = (response.value) // UV index returned
-            $("#currentUV").text('UV: ' + uvData)
+            if (uvData > 5) {
+                $("#currentUVData").css( "background", "red").text(uvData)
+            } else if (uvData >= 3 && uvData <= 5) {
+                $("#currentUVData").css( "background", "yellow").text(uvData)
+            } else {
+                $("#currentUVData").css( "background", "lightGreen").text(uvData)
+            }
         })
 })
