@@ -21,7 +21,7 @@ $(document).ready(function () {
                         $('<h4/>').text("Search for a City:")),
                     $('<div/>', { "class": "row" }).append(
                         $('<form/>', { "class": "col form-inline my-2 my-lg-0" }).append([
-                            $('<input>', { "class": "form-control w100 ", type: "search", placeholder: "Search", "aria-label": "Search", id: "userInput" }),
+                            $('<input>', { "class": "form-control w100 ", type: "search", autocomplete: "off", placeholder: "Search", "aria-label": "Search", id: "userInput" }),
                             $('<p/>', { "class": "w100", id: "errorMessage" }).css("display", "none"),
                             $('<button/>', { "class": "w100 btn btn-outline-success my-2 my-sm-2", id: "submitBtn", type: "submit" }).text("Search"),
                             $('<button/>', { "class": "w100 btn btn-info", id: "clearBtn" }).text("Clear")])),
@@ -44,17 +44,23 @@ $(document).ready(function () {
                         ])
                     )
                 ),
-                $('<div/>', { "class": "row weatherColumn" }).append($('<h3/>').text("5-Day Forecast:")),
+                $('<div/>', { "class": "row weatherColumn" }).append([
+                    $('<h3/>').text("5-Day Forecast:"), 
+                    $('<p/>', { "id": "forcastErrorMessage" }).css("display", "none")
+                ]),
                 forecastWeatherSection
             ])
         ]);
     }
+
     function cityApi(city) {
         $.ajax({
             url: forecastWeatherAPI(city),
             method: "GET"
         }).then((response) => {
             $(".forecastColumn").remove()
+            $("#errorMessage").css({ "display": "none"}).text('')
+            $("#forcastErrorMessage").css({ "display": "none"}).text('')
             localStorage.setItem("latestHistory", city)
             forecastWeatherAPIResponse(response)
         }).catch(error => {
@@ -75,6 +81,7 @@ $(document).ready(function () {
                 method: "GET"
             })
         }).then(uvIndexResponse)
+        .catch(forcastErrorMessage)
     }
 
     function onLoad() {
@@ -113,16 +120,22 @@ $(document).ready(function () {
                 url: currentWeatherAPI(),
                 method: "GET"
             }).then(currentWeatherAPIResponse)
-
+            .catch(forcastErrorMessage)
             // returns object containing current day UV index
             $.ajax({
                 url: uvIndex(),
                 method: "GET"
-            }).then(uvIndexResponse)
+            })
+            .then(uvIndexResponse)
+            .catch(forcastErrorMessage)
         } else {
             cityApi(latestHistory)
         }
 
+    }
+
+    function forcastErrorMessage () {
+        $('#forcastErrorMessage').css({"display": "block", "color": "red"}).text("Error Fetch Weather Data")
     }
 
     function createForecastCard({ forecastDate, forecastIcon, forecastTemp, forecastHumid }) {
@@ -187,7 +200,6 @@ $(document).ready(function () {
         event.preventDefault();
         const text = $('#userInput').val();
         if (!text) return 
-        $("#errorMessage").css("display", "none")
         // returns object containing 5 day forecast
         $.ajax({
             url: forecastWeatherAPI(text),
@@ -196,6 +208,8 @@ $(document).ready(function () {
             $(".forecastColumn").remove()
             $(".city").remove()
             $("#userInput").val('')
+            $("#errorMessage").css("display", "none")
+            $("#forcastErrorMessage").css({ "display": "none"}).text('')
             const getSearchHistory = (JSON.parse(localStorage.getItem("searchHistory")) || [])
             const searchHistory = [text, ...getSearchHistory]
             localStorage.setItem("searchHistory", JSON.stringify(searchHistory))
@@ -230,6 +244,7 @@ $(document).ready(function () {
                 method: "GET"
             })
         }).then(uvIndexResponse)
+        .catch(forcastErrorMessage)
 
     })
 
@@ -240,6 +255,7 @@ $(document).ready(function () {
         $(".city").remove()
         $("#userInput").val('')
         $("#errorMessage").css({ "display": "none"}).text('')
+        $("#forcastErrorMessage").css({ "display": "none"}).text('')
         console.log("clear")
     })
 })
