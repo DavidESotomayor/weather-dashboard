@@ -1,19 +1,23 @@
 $(document).ready(function () {
-    var apiKey = 'f8c674028f7d3e9fc14527ccfada55ec';
-    var forecastWeatherAPI = (city = 'Chicago') => `http://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`;
-    var currentWeatherAPI = (city = 'Chicago') => `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`;
+    var apiKey = 'f8c674028f7d3e9fc14527ccfada55ec'; // API key
+    // sets the initial page with the current weather in Chicago
+    // as well as the forecast and UV index
+    var forecastWeatherAPI = (city = 'Chicago') => `http://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`; 
+    var currentWeatherAPI = (city = 'Chicago') => `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`; 
     var uvIndex = (lat = "41.85", lon = "-87.65") => `http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-    var forecastWeatherSection = $('<div/>', { "class": "row forecastRow" });
+    var forecastWeatherSection = $('<div/>', { "class": "row forecastRow" }); // global variable
 
+    // dynamically populates the DOM
     function createDashboard() {
         var mainRow = $('<div/>', { "class": "row" });
 
+        // sets navbar
         $('body').append([
             $('<nav/>', { "class": "navbar navbar-light bg-light navbarStyles" }).append(
                 $('<span/>', { "class": "navbar-brand mb-0 h1" }).text("Weather Dashboard")),
             $('<div/>', { "class": "container" }).append(
                 mainRow)]);
-
+        // sets the search column
         mainRow.append([
             $('<div/>', { "class": "col-lg-3", id: "searchColumn" })
                 .append([
@@ -27,8 +31,10 @@ $(document).ready(function () {
                             $('<button/>', { "class": "w100 btn btn-info", id: "clearBtn" }).text("Clear")])),
                     $('<div/>', { "class": "row recentSearch" })
                 ]),
+            // sets the weeather column
             $('<div/>', { "class": "col-lg-9" }).append([
                 $('<div/>', { "class": "row weatherColumn" }).append(
+                    // current weather block
                     $('<div/>', { "class": "card mainWeatherBlock" }).append(
                         $('<div/>', { "class": "card-body" }).append([
                             $('<div/>', { "class": "cityAndIcon" }).append([
@@ -44,35 +50,40 @@ $(document).ready(function () {
                         ])
                     )
                 ),
+                // forecast weather block
                 $('<div/>', { "class": "row weatherColumn" }).append([
                     $('<h3/>').text("5-Day Forecast:"), 
-                    $('<p/>', { "id": "forcastErrorMessage" }).css("display", "none")
+                    $('<p/>', { "id": "forecastErrorMessage" }).css("display", "none")
                 ]),
                 forecastWeatherSection
             ])
         ]);
     }
 
+    // makes the ajax call for the forecast data
     function cityApi(city) {
         $.ajax({
             url: forecastWeatherAPI(city),
             method: "GET"
         }).then((response) => {
+            // loading forcast card information
             $(".forecastColumn").remove()
             $("#errorMessage").css({ "display": "none"}).text('')
-            $("#forcastErrorMessage").css({ "display": "none"}).text('')
-            localStorage.setItem("latestHistory", city)
+            $("#forecastErrorMessage").css({ "display": "none"}).text('')
+            if (city) {
+                localStorage.setItem("latestHistory", city)
+            }
             forecastWeatherAPIResponse(response)
         }).catch(error => {
             $("#errorMessage").css({ "display": "inline-block", "color": "red" }).text(error.responseJSON.message)
         })
 
-
-        // returns object containing current day forecast
+        // makes ajax call for the weather data
         $.ajax({
             url: currentWeatherAPI(city),
             method: "GET"
         }).then(response => {
+            // loading current weather card information
             var lat = response.coord.lat;
             var lon = response.coord.lon;
             currentWeatherAPIResponse(response)
@@ -81,9 +92,10 @@ $(document).ready(function () {
                 method: "GET"
             })
         }).then(uvIndexResponse)
-        .catch(forcastErrorMessage)
+        .catch(forecastErrorMessage)
     }
 
+    // when page loads get localStorage and sets recent search list
     function onLoad() {
         //LocalStorage
         /// Search History
@@ -104,40 +116,18 @@ $(document).ready(function () {
         const latestHistory = localStorage.getItem("latestHistory") //"Seattle" || null
 
         if (!latestHistory) {
-            // returns object containing 5 day forecast
-            $.ajax({
-                url: forecastWeatherAPI(),
-                method: "GET"
-            }).then((response) => {
-                $(".forecastColumn").remove()
-                forecastWeatherAPIResponse(response)
-            }).catch(error => {
-                $("#errorMessage").css({ "display": "inline-block", "color": "red" }).text(error.responseJSON.message)
-            })
-
-            // returns object containing current day forecast
-            $.ajax({
-                url: currentWeatherAPI(),
-                method: "GET"
-            }).then(currentWeatherAPIResponse)
-            .catch(forcastErrorMessage)
-            // returns object containing current day UV index
-            $.ajax({
-                url: uvIndex(),
-                method: "GET"
-            })
-            .then(uvIndexResponse)
-            .catch(forcastErrorMessage)
+            cityApi()
         } else {
             cityApi(latestHistory)
         }
-
     }
 
-    function forcastErrorMessage () {
-        $('#forcastErrorMessage').css({"display": "block", "color": "red"}).text("Error Fetch Weather Data")
+    // sets Error message for errors
+    function forecastErrorMessage () {
+        $('#forecastErrorMessage').css({"display": "block", "color": "red"}).text("Error Fetch Weather Data")
     }
 
+    // dynamically creates forecast card and populates data
     function createForecastCard({ forecastDate, forecastIcon, forecastTemp, forecastHumid }) {
         forecastWeatherSection.append(
             $('<div/>', { "class": "col-xl forecastColumn" }).append(
@@ -153,6 +143,7 @@ $(document).ready(function () {
         )
     }
 
+    // rendering five day forecast and setting the data to variables
     const forecastWeatherAPIResponse = function (response) {
         response.list.forEach((list, index, arrayList) => {
             var count = (index + 1) * 7;
@@ -167,6 +158,7 @@ $(document).ready(function () {
         })
     }
 
+    // rendering current weather card with data
     const currentWeatherAPIResponse = function (response) {
         var cityData = (response.name) // name of city returned
         var iconData = (response.weather[0].icon) // icon returned
@@ -182,6 +174,7 @@ $(document).ready(function () {
         $("#currentWind").text('Wind: ' + windData + ' MPH')
     }
 
+    // rendering UV index on current weather card
     const uvIndexResponse = function (response) {
         var uvData = (response.value) // UV index returned
         if (uvData > 5) {
@@ -196,11 +189,12 @@ $(document).ready(function () {
     createDashboard()
     onLoad()
 
+    // button that when clicked displays city weather
     $('#submitBtn').on('click', function (event) {
         event.preventDefault();
         const text = $('#userInput').val();
         if (!text) return 
-        // returns object containing 5 day forecast
+        // makes the request call to fetch new data
         $.ajax({
             url: forecastWeatherAPI(text),
             method: "GET"
@@ -209,8 +203,9 @@ $(document).ready(function () {
             $(".city").remove()
             $("#userInput").val('')
             $("#errorMessage").css("display", "none")
-            $("#forcastErrorMessage").css({ "display": "none"}).text('')
+            $("#forecastErrorMessage").css({ "display": "none"}).text('')
             const getSearchHistory = (JSON.parse(localStorage.getItem("searchHistory")) || [])
+            // sets localStorage with appropriate city search
             const searchHistory = [text, ...getSearchHistory]
             localStorage.setItem("searchHistory", JSON.stringify(searchHistory))
             localStorage.setItem("latestHistory", text)
@@ -231,7 +226,7 @@ $(document).ready(function () {
             $("#errorMessage").css({ "display": "inline-block", "color": "red" }).text(error.responseJSON.message)
         })
 
-        // returns object containing current day forecast
+        // renders UV data
         $.ajax({
             url: currentWeatherAPI(text),
             method: "GET"
@@ -244,10 +239,10 @@ $(document).ready(function () {
                 method: "GET"
             })
         }).then(uvIndexResponse)
-        .catch(forcastErrorMessage)
-
+        .catch(forecastErrorMessage)
     })
 
+    // clear button that resets values, clears recent searches, clears localStorage
     $('#clearBtn').on('click', function (event) {
         event.preventDefault();
         localStorage.removeItem("searchHistory")
@@ -255,7 +250,6 @@ $(document).ready(function () {
         $(".city").remove()
         $("#userInput").val('')
         $("#errorMessage").css({ "display": "none"}).text('')
-        $("#forcastErrorMessage").css({ "display": "none"}).text('')
-        console.log("clear")
+        $("#forecastErrorMessage").css({ "display": "none"}).text('')
     })
 })
