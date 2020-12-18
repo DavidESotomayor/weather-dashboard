@@ -2,9 +2,9 @@ $(document).ready(function () {
     var apiKey = 'f8c674028f7d3e9fc14527ccfada55ec'; // API key
     // sets the initial page with the current weather in Chicago
     // as well as the forecast and UV index
-    var forecastWeatherAPI = (city = 'Chicago') => `http://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`; 
-    var currentWeatherAPI = (city = 'Chicago') => `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`; 
-    var uvIndex = (lat = "41.85", lon = "-87.65") => `http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+    var forecastWeatherAPI = (city = 'Chicago') => `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`; 
+    var currentWeatherAPI = (city = 'Chicago') => `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`; 
+    var uvIndex = (lat = "41.85", lon = "-87.65") => `https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${apiKey}`;
     var forecastWeatherSection = $('<div/>', { "class": "row forecastRow" }); // global variable
 
     // dynamically populates the DOM
